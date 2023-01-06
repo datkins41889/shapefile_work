@@ -80,11 +80,32 @@ for(i in 1:length(unique(shp_valid$Quadrat))){
 quadList_ramet = lapply(quadList_ramet,sf::st_cast, to="MULTIPOLYGON")
 pt_out_ramet = sf::st_as_sf(data.table::rbindlist(quadList_ramet))
 
+saveRDS(pt_out_genet, file = "pt_out_genet.RDS")
+saveRDS(pt_out_ramet, file = "pt_out_ramet.RDS")
+
+library(plantTracker)
+
+neighbor_genet = list()
+for(i in 1:length(unique(pt_out_genet$Quadrat))){
+  dat_i = pt_out_genet[pt_out_genet$Quadrat == unique(pt_out_genet$Quadrat)[i],]
+  neighbor_genet = getNeighbors(dat_i, buff = 0.2, method = "area", compType = "allSpp", output = "summed",
+               trackID = "trackID",
+               specie = "species",
+               quad = "Quadrat",
+               year= "z_Year",
+               site = "Site",
+               geometry = "geometry")
+  print(dat_i$Quadrat)
+  
+}
+
+
+
+
 
 plot(log(size_tplus1) ~ log(basalArea_genet), data = pt_out)  
 abline(h = -11)
 abline(v = -11)
-
 plot(log(size_tplus1) ~ log(basalArea_genet), data = pt_out[pt_out$basalArea_genet > exp(-11) & pt_out$size_tplus1 > exp(-11),])  
 ##########################
 ## GROWTH
