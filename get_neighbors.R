@@ -16,7 +16,7 @@ GN_genet=getNeighbors(dat = pt_out_genet, buff = 0.1 , method = "area", compType
 
 
 
-sf::st_crs(pt_out_genet) = NA
+sf::st_crs(pt_out_genet) = NA ## removes coorddinate reference system from files. IMPORTANT
 
 library(plantTracker)
 prog = 1
