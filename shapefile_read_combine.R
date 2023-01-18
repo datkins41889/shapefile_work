@@ -83,57 +83,7 @@ pt_out_ramet = sf::st_as_sf(data.table::rbindlist(quadList_ramet))
 saveRDS(pt_out_genet, file = "pt_out_genet.RDS")
 saveRDS(pt_out_ramet, file = "pt_out_ramet.RDS")
 
-library(plantTracker)
+## These RDS files are the output for use with the getNeighbors() function.
+## workflow continues in get_neighbors
 
-neighbor_genet = list()
-for(i in 1:length(unique(pt_out_genet$Quadrat))){
-  dat_i = pt_out_genet[pt_out_genet$Quadrat == unique(pt_out_genet$Quadrat)[i],]
-  neighbor_genet = getNeighbors(dat_i, buff = 0.2, method = "area", compType = "allSpp", output = "summed",
-               trackID = "trackID",
-               specie = "species",
-               quad = "Quadrat",
-               year= "z_Year",
-               site = "Site",
-               geometry = "geometry")
-  print(dat_i$Quadrat)
-  
-}
-
-
-
-
-
-plot(log(size_tplus1) ~ log(basalArea_genet), data = pt_out)  
-abline(h = -11)
-abline(v = -11)
-plot(log(size_tplus1) ~ log(basalArea_genet), data = pt_out[pt_out$basalArea_genet > exp(-11) & pt_out$size_tplus1 > exp(-11),])  
-##########################
-## GROWTH
-##################################
-grow_notrim = lm(log(size_tplus1) ~ log(basalArea_genet), data = pt_out)
-summary(grow_notrim)
-
-grow_trim = lm(log(size_tplus1) ~ log(basalArea_genet), data = pt_out[pt_out$basalArea_genet > exp(-11) & pt_out$size_tplus1 > exp(-11),])
-summary(grow_trim)
-
-##########################
-## SURVIVAL
-################################
-surv_notrim = glm(survives_tplus1 ~ log(basalArea_genet), data = pt_out, family = binomial)
-summary(surv_notrim)
-
-plot(jitter(survives_tplus1) ~ log(basalArea_genet), data = pt_out)
-
-preds_surv_notrim = data.frame(basalArea_genet = seq(min(pt_out$basalArea_genet), max(pt_out$basalArea_genet), len=1000))
-preds_surv_notrim$survives_tplus1 = predict.glm(surv_notrim, newdata = preds_surv_trim, type = "response")
-lines(survives_tplus1 ~ log(basalArea_genet), data = preds_surv_trim, lwd=2, col = "red")
-
-surv_trim = glm(survives_tplus1 ~ log(basalArea_genet), data = pt_out[pt_out$basalArea_genet > exp(-11),], family = "binomial")
-summary(surv_trim)
-
-plot(jitter(survives_tplus1) ~ log(basalArea_genet), data = pt_out[pt_out$basalArea_genet > exp(-11),])
-
-preds_surv_trim = data.frame(basalArea_genet = seq(exp(-11), max(pt_out$basalArea_genet), len=1000))
-preds_surv_trim$survives_tplus1 = predict.glm(surv_trim, newdata = preds_surv_trim, type = "response")
-lines(survives_tplus1 ~ log(basalArea_genet), data = preds_surv_trim, lwd=2, col = "red")
 
