@@ -1,4 +1,4 @@
-## Shapefile combination and lambda calculation
+## Shapefile reading and combining
 ## Add data files
 
 ## Create new home directory
@@ -6,10 +6,10 @@ setwd("C:/Users/Dave/OneDrive - University of Wyoming/Traits/WD_Traits/shapefile
 dir_home = getwd()
 
 ## (3) Generate a list of all of your files
-path_list = list.files(path = paste0(dir_home,"/","shapefiles"), recursive = T, pattern = ".shp")
+path_list = list.files(path = paste0(dir_home,"/","shapefiles_2002_2022"), recursive = T, pattern = ".shp")
 path_list = path_list[!grepl("xml", path_list)]
 
-shps = lapply(paste0(dir_home,"/shapefiles/",path_list), sf::st_read, type = 3) ## read in shps from list
+shps = lapply(paste0(dir_home,"/shapefiles_2002_2022/",path_list), sf::st_read, type = 3) ## read in shps from list
 shps2 = lapply(shps, sf::st_cast, to="GEOMETRY") ## change the class to GEOMETRY
 shp = sf::st_as_sf(data.table::rbindlist(shps2)) ## Bind together
 
