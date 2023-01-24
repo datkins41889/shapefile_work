@@ -1,72 +1,43 @@
+library(sf)
+library(plantTracker)
+
 pt_out_genet = readRDS("pt_out_genet.RDS")
 pt_out_ramet = readRDS("pt_out_ramet.RDS")
-library(sf)
-
-sf::st_crs(pt_out_genet) = NA ## Very important
 
 
-GN_genet=getNeighbors(dat = pt_out_genet, buff = 0.1 , method = "area", compType = "allSpp", output = "summed",
-             trackID = "trackID",
-             species = "species",
-             quad = "Quadrat",
-             year= "z_Year",
-             site = "Site",
-             geometry = "geometry")
+sf::st_crs(pt_out_genet) = NA ## removes coordinate reference system from files. IMPORTANT
+## 5,10,15,20 cm buffers
+i=1
+for(i in 1:length(unique(pt_out_genet$Quadrat))){
+  GN_genettemp=getNeighbors(dat = pt_out_genet[pt_out_genet$Quadrat == unique(pt_out_genet$Quadrat[i]),], buff = 0.2 , method = "area", compType = "allSpp", output = "summed",
+                            trackID = "trackID",
+                            species = "species",
+                            quad = "Quadrat",
+                            year= "z_Year",
+                            site = "Site",
+                            geometry = "geometry")
+  if(i == 1){
+    GN_genet_20cm = GN_genettemp
+  } else{
+    GN_genet_20cm = rbind(GN_genet_20cm, GN_genettemp)
+  }
+  print(c("### Quad Number",i,"out of",length(unique(shp_valid$Quadrat))))
+}
 
+saveRDS(GN_genet_20cm, file = "GN_genet_20cm.RDS") ## save genet
 
+data_out = GN_genet_05cm
 
+data_out$neighbors_area_05cm = data_out$neighbors_area
+data_out$nBuff_area_05cm = data_out$nBuff_area
 
-sf::st_crs(pt_out_genet) = NA ## removes coorddinate reference system from files. IMPORTANT
+data_out$neighbors_area_10cm = GN_genet_10cm$neighbors_area
+data_out$nBuff_area_10cm = GN_genet_10cm$nBuff_area
 
-library(plantTracker)
-## 5cm buffer
-prog = 1
-## Chunk the pt_out_genet up into 2k
-## Save first run as GN_genet_5cm
-GN_genet_5cm = data.frame()
-GN_genettemp=getNeighbors(dat = pt_out_genet[(nrow(GN_genet_5cm)+1):(nrow(GN_genet_5cm)+2000),], buff = 0.15 , method = "area", compType = "allSpp", output = "summed",
-                          trackID = "trackID",
-                          species = "species",
-                          quad = "Quadrat",
-                          year= "z_Year",
-                          site = "Site",
-                          geometry = "geometry")
+data_out$neighbors_area_15cm = GN_genet_15cm$neighbors_area
+data_out$nBuff_area_15cm = GN_genet_15cm$nBuff_area
 
-GN_genet_5cm = rbind(GN_genet_5cm, GN_genettemp)
-prog = prog+2000
-prog+2000 > nrow(pt_out_genet)
-saveRDS(GN_genet_15cm, "GN_genet_15cm.RDS")
-## doing a 10cm buffer
-prog = 1
-## Chunk the pt_out_genet up into 2k
-## Save first run as GN_genet_10cm
-GN_genettemp=getNeighbors(dat = pt_out_genet[prog:(prog+2000),], buff = 0.1 , method = "area", compType = "allSpp", output = "summed",
-                      trackID = "trackID",
-                      species = "species",
-                      quad = "Quadrat",
-                      year= "z_Year",
-                      site = "Site",
-                      geometry = "geometry")
+data_out$neighbors_area_20cm = GN_genet_20cm$neighbors_area
+data_out$nBuff_area_20cm = GN_genet_20cm$nBuff_area
 
-GN_genet_10cm = rbind(GN_genet_10cm, GN_genettemp)
-prog = prog+2000
-prog+2000 > nrow(pt_out_genet)
-saveRDS(GN_genet_10cm, "GN_genet_10cm.RDS")
-
-library(plantTracker)
-## 15cm buffer
-prog = 1
-## Chunk the pt_out_genet up into 2k
-## Save first run as GN_genet_15cm
-GN_genettemp=getNeighbors(dat = pt_out_genet[40021:41117,], buff = 0.15 , method = "area", compType = "allSpp", output = "summed",
-                          trackID = "trackID",
-                          species = "species",
-                          quad = "Quadrat",
-                          year= "z_Year",
-                          site = "Site",
-                          geometry = "geometry")
-
-GN_genet_15cm = rbind(GN_genet_15cm, GN_genettemp)
-prog = prog+2000
-prog+2000 > nrow(pt_out_genet)
-saveRDS(GN_genet_15cm, "GN_genet_15cm.RDS")
+saveRDS(data_out, file = "pt_data.RDS") ## save final plant tracker data output
