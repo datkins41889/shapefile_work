@@ -34,17 +34,18 @@ sf::st_is_valid(shp, reason = T)
 shp_valid = sf::st_make_valid(shp) ## removes issues with any invalid geometries.
 
 shp_valid$z_Year = as.integer(shp_valid$z_Year)
+shp_valid$Plot = as.character(shp_valid$Plot)
 
 ## To run without buffgenet (i.e. as ramets) comment out the clonal = T and buffGenet arguments. Change file names genet -> ramet
 ## Loop runs each quadrat individually. Potential memory leak freezes computer if run all together.
 
-quadList_genet = list() ## empty list for trackspp output
+PlotList_genet = list() ## empty list for trackspp output
 i=1
-for(i in 1:length(unique(shp_valid$Quadrat))){
-  dat_i = shp_valid[shp_valid$Quadrat == unique(shp_valid$Quadrat)[i],]
+for(i in 1:length(unique(shp_valid$Plot))){
+  dat_i = shp_valid[shp_valid$Plot == unique(shp_valid$Plot)[i],]
   inv_i = list(c(2002:2007,2009:2022))
-  names(inv_i) = unique(dat_i$Quadrat)
-  quadList_genet[[i]] = trackSpp(dat_i, 
+  names(inv_i) = unique(dat_i$Plot)
+  PlotList_genet[[i]] = trackSpp(dat_i, 
                          inv = inv_i,
                          dorm = 1,
                          buff = 0.05,
@@ -52,10 +53,10 @@ for(i in 1:length(unique(shp_valid$Quadrat))){
                          buffGenet = 0.01,
                          species = "species",
                          site = "Site",
-                         quad = "Quadrat",
+                         quad = "Plot",
                          year = "z_Year",
                          geometry = "geometry")
-  print(c("### Quad Number", i, "out of", length(unique(shp_valid$Quadrat))))
+  print(c("### Plot Number", i, "out of", length(unique(shp_valid$Plot))))
   
 }
 
