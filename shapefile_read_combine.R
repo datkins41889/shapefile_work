@@ -60,13 +60,14 @@ for(i in 1:length(unique(shp_valid$Plot))){
   
 }
 
-quadList_genet = lapply(quadList_genet,sf::st_cast, to="MULTIPOLYGON") ## change to multipolygon
-pt_out_genet = sf::st_as_sf(data.table::rbindlist(quadList_genet, use.names = T)) ## bind together
+PlotList_genet = lapply(PlotList_genet,sf::st_cast, to="MULTIPOLYGON") ## change to multipolygon
+pt_out_genet_plot = sf::st_as_sf(data.table::rbindlist(PlotList_genet, use.names = T)) ## bind together
 
-saveRDS(pt_out_genet, file = "pt_out_genet.RDS") ## save genet
+saveRDS(pt_out_genet_plot, file = "pt_out_genet_plot.RDS") ## save genet
 saveRDS(pt_out_ramet, file = "pt_out_ramet.RDS") ## save ramet
 
 ## These RDS files are the output for use with the getNeighbors() function.
 ## workflow continues in get_neighbors
 
+View(dat_i)
 
