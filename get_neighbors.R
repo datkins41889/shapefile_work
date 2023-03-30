@@ -11,7 +11,7 @@ i=1
 for(i in 1:length(unique(pt_out_genet$Quadrat))){
   dat_i = pt_out_genet[pt_out_genet$Quadrat == unique(pt_out_genet$Quadrat)[i],]
   print(c("### Quad Number",i,"out of",length(unique(pt_out_genet$Quadrat))))
-  GN_genettemp <<- getNeighbors(dat = dat_i , buff = 0.2 , method = "area", compType = "allSpp", output = "summed",
+  GN_genettemp <<- getNeighbors(dat = dat_i , buff = 0.2 , method = "area", compType = "oneSpp", output = "summed",
                             trackID = "trackID",
                             species = "species",
                             quad = "Quadrat",
@@ -19,15 +19,19 @@ for(i in 1:length(unique(pt_out_genet$Quadrat))){
                             site = "Site",
                             geometry = "geometry")
   if(i == 1){
-    GN_genet_20cm <<- GN_genettemp
+    GN_genet_20cm_intra <<- GN_genettemp
     print("first")
   } else {
-    GN_genet_20cm <<- rbind(GN_genet_20cm, GN_genettemp)
+    GN_genet_20cm_intra <<- rbind(GN_genet_20cm_intra, GN_genettemp)
     print("working")
   }
 }
 
-saveRDS(GN_genet_10cm, file = "GN_genet_10cm.RDS") ## save genet
+saveRDS(GN_genet_05cm_intra, file = "GN_genet_05cm_intra.RDS") ## save genet
+saveRDS(GN_genet_10cm_intra, file = "GN_genet_10cm_intra.RDS") ## save genet
+saveRDS(GN_genet_15cm_intra, file = "GN_genet_15cm_intra.RDS") ## save genet
+saveRDS(GN_genet_20cm_intra, file = "GN_genet_20cm_intra.RDS") ## save genet
+
 
 data_out = GN_genet_05cm
 
